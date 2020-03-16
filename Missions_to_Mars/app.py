@@ -1,6 +1,6 @@
-import scrape_mars
-from flask import Flask, jsonify
-import pymongo
+import scrape_mars as sm
+from flask import Flask, redirect, jsonify, render_template
+import socket
 
 #################################################
 # Flask Setup
@@ -12,48 +12,59 @@ app = Flask(__name__)
 #################################################
 
 @app.route("/")
-def welcome():
-    """List all available api routes."""
-    return (
-        f"Available Routes:<br/>"
-        f"/api/v1.0/names<br/>"
-        f"/api/v1.0/passengers"
-    )
+@app.route("/home")
+@app.route("/index")
+def welcome(): 
+    collection = sm.connect_to_mongo()
+    image_dict = sm.from_mongodb(collection, "Images", pickling=True)
+    weather_dict = sm.from_mongodb(collection, "Weather", pickling=True)
+    mars_facts_dict = sm.from_mongodb(collection, "Mars_Facts", pickling=True)
+    
+    
+    image_list = []
+    for key, value in image_dict.items():
+        image_list.append((key, value))
+    num_images = len(image_list)
+    return render_template("index.html", num_images=num_images, image_list=image_list, weather_dict=weather_dict, mars_facts_dict=mars_facts_dict)
 
+@app.route("/clear")
+def db_clear():
+    sm.clear_mongo_collection()
+    return welcome()
 
 @app.route("/scrape")
 def invoke_scrape():
-    hemisphere_image_dict = scrape_mars.scrape()
+    # sm.clear_mongo_collection()
+    collection = sm.connect_to_mongo()
+    
+    image_dict = sm.scrape_imagedata(4)
+    # sm.insert_mongo('Images', image_dict)
+    sm.to_mongodb(image_dict, collection, "Images", pickling=True)
 
-    hemisphere_image_urls = []
-    for key, value in hemisphere_image_dict.items():
-        hemisphere_image_urls.append(f"'title':'{value}', '{key}': ''...''")
-    hemisphere_image_urls
+    weather_dict = sm.scrape_weatherdata()
+    # sm.insert_mongo('Weather', weather_dict)
+    sm.to_mongodb(weather_dict, collection, "Weather", pickling=True)
+    
+    mars_facts_dict = sm.scrape_mars_details()
+    # sm.insert_mongo('Mars_facts', mars_facts_dict)
+    sm.to_mongodb(mars_facts_dict, collection, "Mars_Facts", pickling=True)
 
-    conn = 'mongodb://localhost:27017'
-    client = pymongo.MongoClient(conn)
-    db = client.mars_db
-    collection = db.mars_collection
+    return welcome()
 
-    rec_ids = []
-    for hemi in hemisphere_image_dict:
-        hemisphere_image_urls.append(f"'title':'{value}', '{key}': ''...''")
-        rec_id = collection.insert_one(hemi) 
-        rec_ids.append(rec_id)
+@app.route("/redirect")
+def redirect():
 
+    return welcome()
 
-    return jsonify("Success")
+@app.route("/get")
+def get():
+	hostname = socket.gethostname()    
+	IPAddr = socket.gethostbyname(hostname)    
+	print("Your Computer Name is:" + hostname)    
+	print("Your Computer IP Address is:" + IPAddr)    
+	ipDetails = f"Flask application IP Deails are:\nhostname='{hostname}', IPAddr='{IPAddr}'"
 
-@app.route("/dbtest")
-def dbtest():
-    conn = 'mongodb://localhost:27017'
-    client = pymongo.MongoClient(conn)
-    db = client.mars_db
-    collection = db.mars_collection
-
-    return jsonify("Success")
-
-
-
+	return jsonify(ipDetails)
+    
 if __name__ == '__main__':
     app.run(debug=False)

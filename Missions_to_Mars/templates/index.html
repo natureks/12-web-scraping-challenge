@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="Generator" content="EditPlus®">
+    <meta name="Author" content="Kannan Sekkappan">
+    <meta name="Keywords" content="">
+    <meta name="Description" content="GA Tech Boot Camp Homework using Mission to Mars">
+    <title>Misson To Mars</title>
+	<link rel="icon" type="image/png" href="https://space-facts.com/wp-content/uploads/mars.jpg" sizes="16x16">
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <!-- <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous"> -->
+    <link href="sticky-footer.css" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="relative.css">
+
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+
+    <style>
+        .button {
+            background-color: #4CAF50;
+            /* Green */
+            border: none;
+            color: white;
+            padding: 10px 16px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            cursor: pointer;
+        }
+        
+        .button2 {
+            background-color: #008CBA;
+        }
+        /* Blue */
+        
+        .button3 {
+            background-color: #f44336;
+        }
+        /* Red */
+        
+        .button4 {
+            background-color: #e7e7e7;
+            color: black;
+        }
+        /* Gray */
+        .button5 {
+            background-color: #555555;
+        }
+        
+        table, th, td {
+            border: 1px solid black;
+            border-collapse: collapse;
+        }
+
+		div.special {
+			border-width: thin;
+			border: solid black;
+		}
+
+		div.mainpage {
+			background: GhostWhite;
+			padding-bottom: 20px
+		}
+
+		div.hemisphere {
+			border-width: 8px;
+			border: solid LightGray;
+			padding-left: 30px;
+			padding-right: 10px;
+			padding-top: 10px;
+			padding-bottom: 10px;
+			align:center
+		}
+
+    </style>
+</head>
+
+<body>
+	<div class="jumbotron text-center">
+	  <h1>Mission to Mars</h1>
+	  <button type="Scrape" class="button button2" onclick="window.location.href = '/scrape';">Scrape New Data</button> 
+	</div>
+
+	{% if num_images < 2 %}
+		<div class="jumbotron text-center">
+			<h3>It appears like data is loaded.  Please load the data using the 'Scrape New Data' button</h3>
+		</div>
+	{% endif %}
+
+	<div>
+		<h1>Latest Mars News</h1>
+		<h2>NASA's Next Mars Mission to investigate Interior of Red Planet</h2>
+		<p>
+			Preparation of NASA's next spacecraft to Mars, InSight, has ramped up this summer, on course for launch next May from Vanderburg Airforce Base in central California -- the first interplanetary launch in history from America'a West Coast
+		</p>
+	</div>
+
+	<div class="container mainpage">
+		<div class="row">
+			<div class="col-sm-8">
+				<h1>Featured Mars Image</h1>
+				<img src="https://space-facts.com/wp-content/uploads/mars.jpg">
+			</div>
+			<div class="col-sm-4">
+				<h3>Current weather on Mars</h3>
+				<div class="special">
+					{% for k, v in weather_dict.items() %}
+						<p>{{ v }}</p>
+					{% endfor %}
+				</div>
+				<h3>Mars Facts</h3>
+				<table class="centered thick-border">
+					<tr>
+						<th>Description</th>
+						<th>Value</th>
+					</tr>
+					{% for k, v in mars_facts_dict.items() %}
+						<tr>
+							<td>{{ k }}</td>
+							<td>{{ v }}</td>
+						</tr>
+					{% endfor %}
+				</table>
+			</div>
+		</div>
+	</div>
+
+	<div align="center">
+			<br>
+			<h1>Mars Hemispheres</h1>
+			<br>
+	</div>
+	
+	{% if num_images < 2 %}
+		<h3>~please load /scrape or click on the button 'Scrape New Data'</h3>
+	{% else %}
+		<div class="container hemisphere">
+			<div class="row">
+			  <div class="col-6 col-md-6 col-sm-6 hemisphere">
+				<img src="{{ image_list[0][1] }}" width="95%">
+				<h4>{{ image_list[0][0] }}</h4>
+			  </div>
+			  <div class="col-6 col-md-6 col-sm-6 hemisphere">
+				<img src="{{ image_list[1][1] }}" width="95%">
+				<h4>{{ image_list[1][0] }}</h4>
+			  </div>
+			</div>
+
+			<div class="row">
+			  <div class="col-6 col-md-6 col-sm-6 hemisphere">
+				<img src="{{ image_list[2][1] }}" width="95%">
+				<h4>{{ image_list[2][0] }}</h4>
+			  </div>
+			  <div class="col-6 col-md-6 col-sm-6 hemisphere">
+				<img src="{{ image_list[3][1] }}" width="95%">
+				<h4>{{ image_list[3][0] }}</h4>
+			  </div>
+			</div>
+		</div>
+	{% endif %}
+
+	<br><br><br><br>
+	<div align="center">
+			<br>
+			<h1>Mars Hemispheres</h1>
+			<h1>Hard Coded Display</h1>
+			<br>
+	</div>
+	<div class="container hemisphere">
+		<div class="row">
+		  <div class="col-6 col-md-6 col-sm-6 hemisphere ">
+			<img src="https://space-facts.com/wp-content/uploads/mars.jpg" width="95%">
+			<h4>Image 1 description</h4>
+		  </div>
+		  <div class="col-6 col-md-6 col-sm-6 hemisphere">
+			<img src="https://space-facts.com/wp-content/uploads/mars.jpg" width="95%">
+			<h4>Image 1 description</h4>
+		  </div>
+		</div>
+
+		<div class="row">
+		  <div class="col-6 col-md-6 col-sm-6 hemisphere">
+			<img src="https://space-facts.com/wp-content/uploads/mars.jpg" width="95%">
+			<h4>Image 1 description</h4>
+		  </div>
+		  <div class="col-6 col-md-6 col-sm-6 hemisphere">
+			<img src="https://space-facts.com/wp-content/uploads/mars.jpg" width="95%">
+			<h4>Image 1 description</h4>
+		  </div>
+		</div>
+	</div>
+
+</body>
+</html>
+
+</body>
+
+</html>
